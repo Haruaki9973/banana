@@ -2,47 +2,35 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>進化フルーツ：カオスモード</title>
+  <title>落ちて進化するフルーツ</title>
   <style>
     body {
       background-color: #fffbea;
       font-family: sans-serif;
       margin: 0;
       overflow: hidden;
-      transition: background-color 0.2s;
     }
-
     h1 {
       text-align: center;
       margin: 20px;
-      animation: shake 0.3s infinite alternate ease-in-out;
     }
-
     #spawnBtn {
       display: block;
       font-size: 20px;
       padding: 10px 20px;
       margin: 10px auto;
-      background-color: #ff6666;
+      background-color: #ffcd4d;
       border: none;
       cursor: pointer;
       border-radius: 8px;
-      transition: transform 0.2s;
-      position: relative;
     }
-
-    #spawnBtn:hover {
-      animation: shake 0.2s infinite;
-    }
-
     #game {
       position: relative;
       width: 100vw;
       height: 80vh;
-      border-top: 3px dashed #ccc;
+      border-top: 2px dashed #ccc;
       overflow: hidden;
     }
-
     .fruit {
       position: absolute;
       width: 60px;
@@ -51,17 +39,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: fall 1s ease-out, spin 2s linear infinite;
+      animation: fall 1s ease-out;
     }
-
     @keyframes fall {
-      0% { top: -100px; opacity: 0; }
+      0% { top: -80px; opacity: 0; }
       100% { opacity: 1; }
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
     }
 
     .evolve {
@@ -70,39 +52,24 @@
 
     @keyframes pop {
       0% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(2.5) rotate(180deg); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
     }
 
     #message {
       text-align: center;
-      font-size: 26px;
+      font-size: 24px;
       margin-top: 10px;
-      color: red;
+      color: green;
       font-weight: bold;
-      animation: blink 0.3s infinite;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(10px); }
-    }
-
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <h1>🍉 進化カオスフルーツ 💥</h1>
-  <button id="spawnBtn">フルーツを落とす！（危険）</button>
+  <h1>🍇 落ちて進化するフルーツ 🍉</h1>
+  <button id="spawnBtn">フルーツを落とす！</button>
   <div id="game"></div>
   <div id="message"></div>
-
-  <!-- 効果音 -->
-  <audio id="boomSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
   <script>
     const fruits = [
@@ -117,11 +84,9 @@
     const game = document.getElementById("game");
     const spawnBtn = document.getElementById("spawnBtn");
     const message = document.getElementById("message");
-    const boomSound = document.getElementById("boomSound");
 
     spawnBtn.addEventListener("click", () => {
-      moveButtonRandomly();
-      const randomFruit = fruits[Math.floor(Math.random() * (fruits.length - 1))];
+      const randomFruit = fruits[Math.floor(Math.random() * fruits.length - 1)];
       addFruit(randomFruit.emoji);
       checkEvolution();
     });
@@ -153,36 +118,17 @@
             }, 300);
           }
           setTimeout(() => {
-            boomSound.currentTime = 0;
-            boomSound.play();
             addFruit(next, true);
             if (next === "🍉") {
-              message.textContent = "🌍 地球が割れた！おめでとう🎉";
-              blinkBackground();
+              message.textContent = "🎉 おめでとう！スイカができたよ！";
             }
             checkEvolution();
           }, 400);
         }
       });
     }
-
-    function moveButtonRandomly() {
-      const x = Math.random() * window.innerWidth - 100;
-      const y = Math.random() * window.innerHeight - 200;
-      spawnBtn.style.position = 'absolute';
-      spawnBtn.style.left = `${x}px`;
-      spawnBtn.style.top = `${y}px`;
-    }
-
-    function blinkBackground() {
-      let count = 0;
-      const interval = setInterval(() => {
-        document.body.style.backgroundColor = count % 2 === 0 ? "#ffdddd" : "#fffbea";
-        count++;
-        if (count > 10) clearInterval(interval);
-      }, 100);
-    }
   </script>
 </body>
 </html>
+
 
