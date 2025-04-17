@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>進化するバナナ</title>
+  <style>
+    body {
+      background-color: #fffde6;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+    }
+    h1 {
+      margin-top: 20px;
+      color: #444;
+    }
+    #banana {
+      margin-top: 40px;
+      width: 200px;
+      transition: transform 0.3s ease-out;
+    }
+    #counter {
+      font-size: 24px;
+      margin-top: 20px;
+      color: #333;
+    }
+    #message {
+      font-size: 28px;
+      color: red;
+      font-weight: bold;
+      margin-top: 30px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍌 進化するバナナ</h1>
+  <img id="banana" src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg" alt="banana">
+  <div id="counter">回転数：0</div>
+  <div id="message">もうやめろ！！！🍌💢</div>
+
+  <script>
+    let banana = document.getElementById('banana');
+    let counter = document.getElementById('counter');
+    let message = document.getElementById('message');
+    let rotation = 0;
+    let count = 0;
+
+    const stages = [
+      { count: 0, src: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg" },
+      { count: 10, src: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Banana_cluster.jpg" },
+      { count: 20, src: "https://upload.wikimedia.org/wikipedia/commons/1/11/Banana_tree.jpg" },
+      { count: 30, src: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Minions_Banana.jpg" }
+    ];
+
+    banana.addEventListener('click', () => {
+      rotation += 45;
+      count++;
+      banana.style.transform = `rotate(${rotation}deg)`;
+      counter.textContent = `回転数：${count}`;
+
+      // 進化判定
+      for (let stage of stages) {
+        if (count === stage.count) {
+          banana.src = stage.src;
+        }
+      }
+
+      // 最終警告
+      if (count >= 40) {
+        message.style.display = 'block';
+        banana.style.filter = 'grayscale(100%)';
+        banana.style.transform += ' scale(1.2)';
+      }
+    });
+  </script>
+</body>
+</html>
