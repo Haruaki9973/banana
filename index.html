@@ -2,76 +2,118 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>進化するバナナ</title>
+  <title>進化するフルーツ</title>
   <style>
     body {
-      background-color: #fffde6;
-      text-align: center;
-      font-family: 'Arial', sans-serif;
+      background-color: #fffbea;
+      font-family: sans-serif;
+      margin: 0;
+      overflow: hidden;
     }
     h1 {
+      text-align: center;
       margin-top: 20px;
-      color: #444;
     }
-    #banana {
-      margin-top: 40px;
-      width: 200px;
-      transition: transform 0.3s ease-out;
+    #spawnBtn {
+      display: block;
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px auto;
+      background-color: #ffcd4d;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
     }
-    #counter {
-      font-size: 24px;
-      margin-top: 20px;
-      color: #333;
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 80vh;
+      border: 2px dashed #ccc;
+      overflow: hidden;
     }
-    #message {
-      font-size: 28px;
-      color: red;
-      font-weight: bold;
-      margin-top: 30px;
-      display: none;
+    .fruit {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      font-size: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, top 0.3s, left 0.3s;
+    }
+    .fruit:hover {
+      transform: scale(1.2);
+    }
+
+    .evolve {
+      animation: pop 0.4s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.6); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <h1>🍌 進化するバナナ</h1>
-  <img id="banana" src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg" alt="banana">
-  <div id="counter">回転数：0</div>
-  <div id="message">もうやめろ！！！🍌💢</div>
+  <h1>🍇 ランダムに飛び出すフルーツ 🍌</h1>
+  <button id="spawnBtn">フルーツを出す！</button>
+  <div id="game"></div>
 
   <script>
-    let banana = document.getElementById('banana');
-    let counter = document.getElementById('counter');
-    let message = document.getElementById('message');
-    let rotation = 0;
-    let count = 0;
-
-    const stages = [
-      { count: 0, src: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Banana-Single.jpg" },
-      { count: 10, src: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Banana_cluster.jpg" },
-      { count: 20, src: "https://upload.wikimedia.org/wikipedia/commons/1/11/Banana_tree.jpg" },
-      { count: 30, src: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Minions_Banana.jpg" }
+    const fruits = [
+      { emoji: "🍎", next: "🍊" },
+      { emoji: "🍊", next: "🍇" },
+      { emoji: "🍇", next: "🍍" },
+      { emoji: "🍍", next: "🍌" },
+      { emoji: "🍌", next: "🍉" },
+      { emoji: "🍉", next: null }
     ];
 
-    banana.addEventListener('click', () => {
-      rotation += 45;
-      count++;
-      banana.style.transform = `rotate(${rotation}deg)`;
-      counter.textContent = `回転数：${count}`;
+    const game = document.getElementById("game");
+    const spawnBtn = document.getElementById("spawnBtn");
 
-      // 進化判定
-      for (let stage of stages) {
-        if (count === stage.count) {
-          banana.src = stage.src;
-        }
-      }
-
-      // 最終警告
-      if (count >= 40) {
-        message.style.display = 'block';
-        banana.style.filter = 'grayscale(100%)';
-        banana.style.transform += ' scale(1.2)';
-      }
+    spawnBtn.addEventListener("click", () => {
+      const baseFruit = fruits[0].emoji;
+      addFruit(baseFruit);
+      checkEvolution();
     });
+
+    function addFruit(emoji, animate = false) {
+      const div = document.createElement("div");
+      div.className = "fruit";
+      if (animate) div.classList.add("evolve");
+      div.textContent = emoji;
+      div.dataset.type = emoji;
+
+      // ランダムな位置に配置
+      const gameRect = game.getBoundingClientRect();
+      const x = Math.random() * (gameRect.width - 60);
+      const y = Math.random() * (gameRect.height - 60);
+      div.style.left = `${x}px`;
+      div.style.top = `${y}px`;
+
+      game.appendChild(div);
+    }
+
+    function checkEvolution() {
+      fruits.forEach(({ emoji, next }) => {
+        const sameFruits = Array.from(document.querySelectorAll(`.fruit[data-type='${emoji}']`));
+        if (sameFruits.length >= 3 && next) {
+          for (let i = 0; i < 3; i++) {
+            sameFruits[i].classList.add("evolve");
+            setTimeout(() => {
+              sameFruits[i].remove();
+            }, 300);
+          }
+          setTimeout(() => {
+            addFruit(next, true);
+            checkEvolution();
+          }, 350);
+        }
+      });
+    }
   </script>
 </body>
 </html>
